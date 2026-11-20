@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YARUSSKIY DRIVE — СКОЧАТ БИСПЛАТНА 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;900&family=Rubik+Mono+One&family=Russo+One&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --speed-mult: 1;
+      --neon-pink: #ff00ea;
+      --neon-cyan: #00f7ff;
+      --neon-lime: #39ff14;
+      --neon-yellow: #ffe600;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      background-color: #060014;
+      color: #ffffff;
+      font-family: 'Russo One', 'Inter', sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    .bg-animated-gradient {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background: linear-gradient(125deg, #09001c, #240046, #001a33, #3a002b, #002820, #160033);
+      background-size: 400% 400%;
+      animation: gradientShift calc(8s / var(--speed-mult)) ease infinite;
+    }
+
+    .cyber-grid {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background-image:
+        linear-gradient(rgba(0, 247, 255, 0.14) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 0, 234, 0.14) 1px, transparent 1px);
+      background-size: 48px 48px;
+      transform: perspective(500px) rotateX(45deg) scale(1.8);
+      transform-origin: center top;
+      animation: gridScroll calc(3s / var(--speed-mult)) linear infinite;
+      pointer-events: none;
+    }
+
+    #bgCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    #fxCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 60;
+      pointer-events: none;
+    }
+
+    #rainbowFrame {
+      position: fixed;
+      inset: 0;
+      z-index: 55;
+      pointer-events: none;
+      border: 0px solid transparent;
+      transition: border-width 0.15s ease;
+    }
+
+    #rainbowFrame.active {
+      border-width: 14px;
+      animation: rainbowBorder 0.25s linear infinite;
+      box-shadow: inset 0 0 60px rgba(255, 0, 234, 0.9), inset 0 0 110px rgba(0, 247, 255, 0.8);
+    }
+
+    @keyframes rainbowBorder {
+      0% { border-color: #ff0055; }
+      20% { border-color: #ffe600; }
+      40% { border-color: #39ff14; }
+      60% { border-color: #00f7ff; }
+      80% { border-color: #9d00ff; }
+      100% { border-color: #ff0055; }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes gridScroll {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 48px; }
+    }
+
+    .marquee-wrap {
+      overflow: hidden;
+      white-space: nowrap;
+      width: 100%;
+      background: linear-gradient(90deg, #ff0099, #6600ff, #00ccff, #00ff66, #ffcc00, #ff0099);
+      background-size: 300% 100%;
+      animation: gradientShift calc(3s / var(--speed-mult)) linear infinite;
+      border-top: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      box-shadow: 0 0 20px rgba(255, 0, 234, 0.7);
+    }
+
+    .marquee-track {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marqueeMove calc(16s / var(--speed-mult)) linear infinite;
+      font-family: 'Rubik Mono One', sans-serif;
+      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
+    }
+
+    .marquee-track-reverse {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marqueeMoveReverse calc(14s / var(--speed-mult)) linear infinite;
+      font-family: 'Rubik Mono One', sans-serif;
+      text-shadow: 2px 2px 0 #000, -1px -1px 0 #000;
+    }
+
+    @keyframes marqueeMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    @keyframes marqueeMoveReverse {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(0); }
+    }
+
+    .glitch-title {
+      font-family: 'Rubik Mono One', sans-serif;
+      position: relative;
+      text-shadow:
+        0 0 10px #00f7ff,
+        0 0 25px #ff00ea,
+        0 0 50px #ff00ea,
+        4px 4px 0px #000;
+      animation: titlePulse calc(1.2s / var(--speed-mult)) ease-in-out infinite, glitchSkew calc(2.2s / var(--speed-mult)) infinite;
+    }
+
+    .glitch-title::before,
+    .glitch-title::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .glitch-title::before {
+      color: #00f7ff;
+      z-index: -1;
+      animation: glitchOffset1 calc(0.45s / var(--speed-mult)) infinite linear alternate-reverse;
+    }
+
+    .glitch-title::after {
+      color: #ff00ea;
+      z-index: -2;
+      animation: glitchOffset2 calc(0.35s / var(--speed-mult)) infinite linear alternate-reverse;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    @keyframes glitchSkew {
+      0%, 88%, 100% { transform: skew(0deg); }
+      90% { transform: skew(-8deg) scale(1.03); }
+      93% { transform: skew(8deg) scale(0.98); }
+      96% { transform: skew(-3deg); }
+    }
+
+    @keyframes glitchOffset1 {
+      0% { transform: translate(-3px, 2px); clip-path: inset(10% 0 60% 0); }
+      50% { transform: translate(4px, -2px); clip-path: inset(40% 0 20% 0); }
+      100% { transform: translate(-2px, 3px); clip-path: inset(70% 0 5% 0); }
+    }
+
+    @keyframes glitchOffset2 {
+      0% { transform: translate(3px, -2px); clip-path: inset(60% 0 10% 0); }
+      50% { transform: translate(-4px, 3px); clip-path: inset(15% 0 50% 0); }
+      100% { transform: translate(2px, -3px); clip-path: inset(30% 0 30% 0); }
+    }
+
+    .mega-btn {
+      position: relative;
+      background: linear-gradient(90deg, #ff0055, #ff9900, #ffee00, #39ff14, #00f7ff, #9d00ff, #ff00ea, #ff0055);
+      background-size: 400% 400%;
+      border: 5px solid #ffffff;
+      box-shadow:
+        0 12px 0 #59008c,
+        0 0 30px #ff00ea,
+        0 0 60px #00f7ff,
+        0 0 100px rgba(57, 255, 20, 0.7);
+      animation:
+        gradientShift calc(1.8s / var(--speed-mult)) linear infinite,
+        btnPulse calc(0.85s / var(--speed-mult)) ease-in-out infinite,
+        btnWobble calc(0.28s / var(--speed-mult)) infinite;
+      transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.15s ease;
+      cursor: pointer;
+    }
+
+    .mega-btn:hover {
+      transform: scale(1.12) rotate(-1.5deg);
+      animation:
+        gradientShift 0.6s linear infinite,
+        btnHoverShake 0.09s infinite;
+      box-shadow:
+        0 16px 0 #ff0066,
+        0 0 50px #ffee00,
+        0 0 100px #00f7ff,
+        0 0 160px #ff00ea;
+    }
+
+    .mega-btn:active {
+      transform: scale(0.95) translateY(8px);
+      box-shadow:
+        0 4px 0 #59008c,
+        0 0 80px #ffffff;
+    }
+
+    .mega-btn-text {
+      font-family: 'Rubik Mono One', sans-serif;
+      text-shadow: 3px 3px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+    }
+
+    @keyframes btnPulse {
+      0%, 100% { filter: brightness(1) saturate(1.2); }
+      50% { filter: brightness(1.25) saturate(1.8); }
+    }
+
+    @keyframes btnWobble {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-2px, 1px) rotate(-0.7deg); }
+      50% { transform: translate(2px, -1px) rotate(0.7deg); }
+      75% { transform: translate(-1px, -2px) rotate(-0.4deg); }
+    }
+
+    @keyframes btnHoverShake {
+      0% { transform: scale(1.13) translate(-4px, 3px) rotate(-2deg); }
+      25% { transform: scale(1.15) translate(4px, -3px) rotate(2deg); }
+      50% { transform: scale(1.12) translate(-3px, -4px) rotate(-1.5deg); }
+      75% { transform: scale(1.15) translate(3px, 4px) rotate(1.5deg); }
+      100% { transform: scale(1.13) translate(-4px, 3px) rotate(-2deg); }
+    }
+
+    .sticker-badge {
+      position: fixed;
+      z-index: 25;
+      font-family: 'Rubik Mono One', sans-serif;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), 0 0 18px currentColor;
+      border: 3px solid #fff;
+      pointer-events: auto;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .sticker-badge:hover {
+      transform: scale(1.25) rotate(12deg) !important;
+    }
+
+    .float-1 { animation: floatBounce calc(2.4s / var(--speed-mult)) ease-in-out infinite; }
+    .float-2 { animation: floatBounce calc(3.1s / var(--speed-mult)) ease-in-out infinite reverse; }
+    .float-3 { animation: floatSpin calc(4.2s / var(--speed-mult)) ease-in-out infinite; }
+
+    @keyframes floatBounce {
+      0%, 100% { transform: translateY(0) rotate(-6deg); }
+      50% { transform: translateY(-18px) rotate(6deg); }
+    }
+
+    @keyframes floatSpin {
+      0%, 100% { transform: translateY(0) rotate(8deg) scale(1); }
+      50% { transform: translateY(-14px) rotate(-10deg) scale(1.1); }
+    }
+
+    .spin-fast {
+      animation: spin360 calc(2.2s / var(--speed-mult)) linear infinite;
+    }
+
+    .spin-reverse {
+      animation: spin360 calc(2.8s / var(--speed-mult)) linear infinite reverse;
+    }
+
+    @keyframes spin360 {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .screen-shake {
+      animation: megaShake 0.12s infinite;
+    }
+
+    @keyframes megaShake {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      20% { transform: translate(-12px, 8px) rotate(-1.2deg); }
+      40% { transform: translate(12px, -10px) rotate(1.2deg); }
+      60% { transform: translate(-10px, -8px) rotate(-0.8deg); }
+      80% { transform: translate(10px, 10px) rotate(0.8deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    .floating-hype-word {
+      position: fixed;
+      z-index: 65;
+      pointer-events: none;
+      font-family: 'Rubik Mono One', sans-serif;
+      text-shadow: 3px 3px 0 #000, 0 0 20px currentColor;
+      animation: hypeFly 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes hypeFly {
+      0% { opacity: 0; transform: translate(-50%, 0) scale(0.3) rotate(-15deg); }
+      20% { opacity: 1; transform: translate(-50%, -40px) scale(1.3) rotate(10deg); }
+      100% { opacity: 0; transform: translate(-50%, -220px) scale(1.7) rotate(-8deg); }
+    }
+
+    .tilt-card {
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out, box-shadow 0.2s ease;
+      background: rgba(16, 4, 38, 0.85);
+      backdrop-filter: blur(10px);
+    }
+
+    .tilt-card:hover {
+      box-shadow: 0 0 35px rgba(0, 247, 255, 0.65), 0 0 60px rgba(255, 0, 234, 0.45);
+    }
+
+    .toast-enter {
+      animation: toastSlideIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    }
+
+    @keyframes toastSlideIn {
+      from { opacity: 0; transform: translateX(-120%) scale(0.8); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    .turbo-active .bg-animated-gradient {
+      filter: hue-rotate(90deg) saturate(2.5) contrast(1.2);
+      animation: turboHue 0.8s linear infinite, gradientShift 1.5s ease infinite;
+    }
+
+    @keyframes turboHue {
+      0% { filter: hue-rotate(0deg) saturate(2.2); }
+      100% { filter: hue-rotate(360deg) saturate(2.2); }
+    }
+  </style>
+</head>
+<body class="relative min-h-screen flex flex-col justify-between selection:bg-fuchsia-500 selection:text-white">
+  <div class="bg-animated-gradient"></div>
+  <div class="cyber-grid"></div>
+  <canvas id="bgCanvas"></canvas>
+  <canvas id="fxCanvas"></canvas>
+  <div id="rainbowFrame"></div>
+
+  <div class="fixed top-0 left-0 right-0 z-40 marquee-wrap py-2 text-xs sm:text-sm md:text-base tracking-wider">
+    <div class="marquee-track">
+      🔥 YARUSSKIY DRIVE 2026 🔥 999999 ТБ БЕСПЛАТНО ⚡ БЕЗ СМС И РЕГИСТРАЦИИ ⚡ СКОРОСТЬ СВЕТА ⚡ ОДОБРЕНО ГЕНИЯМИ ⚡ ЖМИ СКОЧАТ БИСПЛАТНА ⚡ 🔥 YARUSSKIY DRIVE 2026 🔥 999999 ТБ БЕСПЛАТНО ⚡ БЕЗ СМС И РЕГИСТРАЦИИ ⚡ СКОРОСТЬ СВЕТА ⚡ ОДОБРЕНО ГЕНИЯМИ ⚡ ЖМИ СКОЧАТ БИСПЛАТНА ⚡
+    </div>
+  </div>
+
+  <div class="fixed top-12 right-2 sm:right-4 z-50 flex flex-col sm:flex-row gap-2">
+    <button id="turboBtn" type="button" class="px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl border-2 border-yellow-300 bg-gradient-to-r from-fuchsia-600 via-red-500 to-yellow-500 text-white text-xs sm:text-sm font-black shadow-[0_0_20px_rgba(255,230,0,0.8)] hover:scale-110 active:scale-95 transition-transform cursor-pointer">
+      ⚡ ТУРБО СДВГ: ВЫКЛ
+    </button>
+    <button id="soundBtn" type="button" class="px-3 py-2 sm:px-4 sm:py-2.5 rounded-2xl border-2 border-cyan-300 bg-slate-900/90 text-cyan-300 text-xs sm:text-sm font-black shadow-[0_0_18px_rgba(0,247,255,0.6)] hover:scale-110 active:scale-95 transition-transform cursor-pointer">
+      🔊 ЗВУК: ВКЛ
+    </button>
+  </div>
+
+  <div class="sticker-badge float-1 hidden lg:block top-28 left-6 px-4 py-2 rounded-2xl bg-lime-400 text-black text-xs rotate-[-12deg]" onclick="spawnRandomBurst(event)">
+    🛡️ 100% НЕ ВИРУС
+  </div>
+  <div class="sticker-badge float-2 hidden lg:block top-52 right-8 px-4 py-2 rounded-2xl bg-cyan-400 text-black text-xs rotate-[10deg]" onclick="spawnRandomBurst(event)">
+    🚀 FPS +9999
+  </div>
+  <div class="sticker-badge float-3 hidden md:block bottom-32 left-6 px-4 py-2 rounded-2xl bg-fuchsia-500 text-white text-xs rotate-[8deg]" onclick="spawnRandomBurst(event)">
+    🏆 ТОП 1 В ГАЛАКТИКЕ
+  </div>
+  <div class="sticker-badge float-1 hidden md:block bottom-28 right-6 px-4 py-2 rounded-2xl bg-yellow-400 text-black text-xs rotate-[-9deg]" onclick="spawnRandomBurst(event)">
+    💎 ХАЛЯВА 2026
+  </div>
+  <div class="sticker-badge float-2 hidden xl:block top-1/2 left-10 px-4 py-2 rounded-2xl bg-red-600 text-yellow-200 text-xs rotate-[14deg]" onclick="spawnRandomBurst(event)">
+    🔥 СУПЕР ТУРБО
+  </div>
+
+  <div id="toastContainer" class="fixed bottom-14 left-3 sm:left-5 z-40 flex flex-col gap-2 max-w-[85vw] sm:max-w-xs pointer-events-none"></div>
+
+  <main id="mainWrap" class="relative z-20 pt-24 pb-24 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto w-full">
+    <section class="flex flex-wrap justify-center gap-3 sm:gap-5 mb-8">
+      <div class="px-4 py-2.5 rounded-2xl bg-black/70 border-2 border-cyan-400 shadow-[0_0_20px_rgba(0,247,255,0.5)] text-center min-w-[140px]">
+        <div class="text-[10px] sm:text-xs text-cyan-300 uppercase tracking-widest">Пользователей онлайн</div>
+        <div id="onlineCounter" class="text-xl sm:text-2xl font-black text-white">148,920</div>
+      </div>
+      <div class="px-4 py-2.5 rounded-2xl bg-black/70 border-2 border-fuchsia-500 shadow-[0_0_20px_rgba(255,0,234,0.5)] text-center min-w-[140px]">
+        <div class="text-[10px] sm:text-xs text-fuchsia-300 uppercase tracking-widest">Скачано терабайт</div>
+        <div id="tbCounter" class="text-xl sm:text-2xl font-black text-yellow-300">9,842,105</div>
+      </div>
+      <div class="px-4 py-2.5 rounded-2xl bg-black/70 border-2 border-lime-400 shadow-[0_0_20px_rgba(57,255,20,0.5)] text-center min-w-[140px]">
+        <div class="text-[10px] sm:text-xs text-lime-300 uppercase tracking-widest">Уровень СДВГ</div>
+        <div id="adhdCounter" class="text-xl sm:text-2xl font-black text-lime-400">999%</div>
+      </div>
+    </section>
+
+    <section class="flex flex-col items-center justify-center text-center py-6 sm:py-10 min-h-[68vh]">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-5 rounded-full bg-gradient-to-r from-yellow-400 via-pink-500 to-cyan-400 text-black font-black text-xs sm:text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(255,255,255,0.7)] animate-bounce">
+        <span>⚡ ОФИЦИАЛЬНЫЙ УЛЬТРА-ПОРТАЛ 2026 ⚡</span>
+      </div>
+
+      <div class="flex items-center justify-center gap-3 sm:gap-6 mb-6 flex-wrap">
+        <svg class="w-10 h-10 sm:w-16 sm:h-16 spin-fast drop-shadow-[0_0_15px_#ffe600]" viewBox="0 0 64 64" fill="none">
+          <polygon points="36,2 10,36 30,36 26,62 54,26 34,26" fill="#ffe600" stroke="#ffffff" stroke-width="3"/>
+        </svg>
+
+        <h1 class="glitch-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white leading-none" data-text="YARUSSKIY DRIVE">
+          YARUSSKIY DRIVE
+        </h1>
+
+        <svg class="w-10 h-10 sm:w-16 sm:h-16 spin-reverse drop-shadow-[0_0_15px_#00f7ff]" viewBox="0 0 64 64" fill="none">
+          <polygon points="32,2 40,22 62,24 45,38 50,60 32,48 14,60 19,38 2,24 24,22" fill="#00f7ff" stroke="#ff00ea" stroke-width="3"/>
+        </svg>
+      </div>
+
+      <p class="max-w-2xl text-base sm:text-xl md:text-2xl text-cyan-100 font-bold mb-10 px-4 py-3 rounded-2xl bg-black/55 border border-fuchsia-500/60 shadow-[0_0_25px_rgba(255,0,234,0.35)]">
+        Единственное облачное хранилище на <span class="text-yellow-300">КВАНТОВОЙ КАРТОШКЕ</span> и чистом адреналине! Жми на кнопку ниже и забери легендарный файл прямо сейчас!
+      </p>
+
+      <div class="relative my-4 sm:my-6 w-full flex justify-center">
+        <div class="absolute -inset-4 bg-gradient-to-r from-pink-500 via-yellow-400 to-cyan-400 rounded-[2.5rem] blur-2xl opacity-75 animate-pulse pointer-events-none"></div>
+        <button id="downloadBtn" type="button" class="mega-btn relative z-10 w-full max-w-2xl px-6 py-7 sm:px-12 sm:py-10 rounded-[2rem] flex flex-col items-center justify-center gap-2 text-white">
+          <span class="mega-btn-text text-2xl sm:text-4xl md:text-5xl font-black tracking-wide leading-tight">
+            СКОЧАТ БИСПЛАТНА
+          </span>
+          <span class="inline-block px-4 py-1 rounded-full bg-black/75 border border-white/80 text-yellow-300 text-xs sm:text-sm md:text-base font-extrabold tracking-widest">
+            file.mp4 • БЫСТРО • БЕЗ СМС • ЖМИ СЮДА
+          </span>
+        </button>
+      </div>
+
+      <div class="mt-8 flex flex-wrap justify-center gap-2 sm:gap-3 lg:hidden">
+        <span class="px-3 py-1.5 rounded-xl bg-lime-400 text-black text-xs font-black border-2 border-white">🛡️ 100% НЕ ВИРУС</span>
+        <span class="px-3 py-1.5 rounded-xl bg-cyan-400 text-black text-xs font-black border-2 border-white">🚀 FPS +9999</span>
+        <span class="px-3 py-1.5 rounded-xl bg-yellow-400 text-black text-xs font-black border-2 border-white">💎 ХАЛЯВА 2026</span>
+      </div>
+    </section>
+
+    <section class="mt-12 sm:mt-20 p-6 sm:p-10 rounded-3xl bg-black/75 border-4 border-fuchsia-500 shadow-[0_0_45px_rgba(255,0,234,0.45)] relative overflow-hidden">
+      <div class="flex items-center gap-3 mb-5">
+        <svg class="w-9 h-9 text-yellow-300 spin-fast shrink-0" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L14.8 8.5L22 9.3L16.5 14L18.2 21L12 17.3L5.8 21L7.5 14L2 9.3L9.2 8.5L12 2Z"/>
+        </svg>
+        <h2 class="text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-cyan-300">
+          О КОМПАНИИ YARUSSKIY DRIVE
+        </h2>
+      </div>
+      <div class="space-y-4 text-sm sm:text-lg text-slate-100 leading-relaxed font-sans font-bold">
+        <p>
+          <span class="text-cyan-300">YARUSSKIY DRIVE</span> — это секретная гипертехнологичная корпорация будущего, основанная в гараже ровно в 3:33 ночи. Пока обычные облачные сервисы используют скучные процессоры, наши дата-центры работают на <span class="text-yellow-300">чистом адреналине, RGB-подсветке на 10000 люмен и отборной квантовой картошке</span>!
+        </p>
+        <p>
+          Каждый байт вашего <span class="text-fuchsia-400">file.mp4</span> лично разгоняется до <span class="text-lime-400">999,999 ГБ/с</span> с помощью неоновых вентиляторов и легендарного баса. По данным независимых экспертов из интернета, после нажатия кнопки «СКОЧАТ БИСПЛАТНА» у компьютера вырастает FPS, монитор начинает сиять ярче солнца, а уровень ауры пользователя пробивает потолок.
+        </p>
+      </div>
+    </section>
+
+    <section class="mt-14">
+      <h2 class="text-center text-2xl sm:text-4xl font-black mb-8 text-cyan-300 drop-shadow-[0_0_15px_#00f7ff]">
+        ⚡ ПОЧЕМУ МЫ ЛУЧШЕ ВСЕХ ⚡
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="tilt-card p-6 rounded-3xl border-2 border-cyan-400 flex flex-col items-center text-center">
+          <svg class="w-14 h-14 mb-4 text-cyan-300" viewBox="0 0 64 64" fill="none">
+            <path d="M36 4L12 36H30L26 60L52 26H34L36 4Z" fill="#00f7ff" stroke="#ffffff" stroke-width="3"/>
+          </svg>
+          <h3 class="text-lg sm:text-xl font-black text-yellow-300 mb-2">СКОРОСТЬ 999 ГБИТ/С</h3>
+          <p class="text-xs sm:text-sm text-cyan-100 font-sans font-bold">Файл скачивается быстрее, чем ты успеешь моргнуть или подумать о смысле жизни.</p>
+        </div>
+
+        <div class="tilt-card p-6 rounded-3xl border-2 border-fuchsia-500 flex flex-col items-center text-center">
+          <svg class="w-14 h-14 mb-4 text-fuchsia-400" viewBox="0 0 64 64" fill="none">
+            <path d="M18 48H48C54.6 48 60 42.6 60 36C60 29.8 55.3 24.7 49.2 24.1C47.1 15.9 39.7 10 31 10C20.5 10 12 18.5 12 29C12 29.6 12 30.2 12.1 30.8C7.4 32.3 4 36.7 4 42C4 45.3 10.3 48 18 48Z" fill="#ff00ea" stroke="#ffffff" stroke-width="3"/>
+          </svg>
+          <h3 class="text-lg sm:text-xl font-black text-fuchsia-300 mb-2">ОБЛАКО НА 100500 ТБ</h3>
+          <p class="text-xs sm:text-sm text-pink-100 font-sans font-bold">Поместится весь интернет, все мемы человечества и ещё останется место для домашки.</p>
+        </div>
+
+        <div class="tilt-card p-6 rounded-3xl border-2 border-lime-400 flex flex-col items-center text-center">
+          <svg class="w-14 h-14 mb-4 text-lime-400" viewBox="0 0 64 64" fill="none">
+            <path d="M32 6L54 14V30C54 44.5 44.6 55.2 32 60C19.4 55.2 10 44.5 10 30V14L32 6Z" fill="#39ff14" stroke="#ffffff" stroke-width="3"/>
+            <path d="M22 32L29 39L43 25" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3 class="text-lg sm:text-xl font-black text-lime-300 mb-2">ЗАЩИТА ОТ ВСЕГО</h3>
+          <p class="text-xs sm:text-sm text-lime-100 font-sans font-bold">Тройное неоновое шифрование от скуки, лагов, медленного вайфая и плохих оценок.</p>
+        </div>
+
+        <div class="tilt-card p-6 rounded-3xl border-2 border-yellow-400 flex flex-col items-center text-center">
+          <svg class="w-14 h-14 mb-4 text-yellow-300" viewBox="0 0 64 64" fill="none">
+            <circle cx="32" cy="32" r="24" fill="#ffe600" stroke="#ffffff" stroke-width="3"/>
+            <path d="M32 16V32L44 38" stroke="#000000" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+          <h3 class="text-lg sm:text-xl font-black text-yellow-300 mb-2">ПОДДЕРЖКА 25/8</h3>
+          <p class="text-xs sm:text-sm text-yellow-100 font-sans font-bold">Наши операторы не спят вообще, они питаются энергетиками и отвечают силой мысли.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mt-16">
+      <h2 class="text-center text-2xl sm:text-4xl font-black mb-8 text-yellow-300 drop-shadow-[0_0_15px_#ffe600]">
+        ⭐ 100% РЕАЛЬНЫЕ ОТЗЫВЫ ЛЕГЕНД ⭐
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <article class="p-6 rounded-3xl bg-black/75 border-2 border-yellow-400 shadow-[0_0_25px_rgba(255,230,0,0.3)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-fuchsia-600 flex items-center justify-center font-black text-xl border-2 border-white">О</div>
+              <div>
+                <div class="font-black text-lg text-white">Олег</div>
+                <div class="text-yellow-400 text-sm tracking-widest">★★★★★ 5.0</div>
+              </div>
+            </div>
+            <p class="text-sm sm:text-base text-slate-200 font-sans font-bold">
+              «Нажал скочат бисплатна и мой комп стал светиться как елка, 10/10. Соседи подумали, что я открыл портал в 2077 год!»
+            </p>
+          </div>
+          <div class="mt-4 text-xs text-lime-400 font-bold">✔ Подтверждённый гений</div>
+        </article>
+
+        <article class="p-6 rounded-3xl bg-black/75 border-2 border-fuchsia-500 shadow-[0_0_25px_rgba(255,0,234,0.3)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-lime-400 to-cyan-500 flex items-center justify-center font-black text-xl text-black border-2 border-white">М</div>
+              <div>
+                <div class="font-black text-lg text-white">Максим</div>
+                <div class="text-yellow-400 text-sm tracking-widest">★★★★★ 5.0</div>
+              </div>
+            </div>
+            <p class="text-sm sm:text-base text-slate-200 font-sans font-bold">
+              «Друг скинул ссылку, я нажал и не пожалел, реально работает!! Фейерверки чуть не сожгли мне монитор, кайф!»
+            </p>
+          </div>
+          <div class="mt-4 text-xs text-cyan-300 font-bold">✔ Скачал file.mp4 42 раза</div>
+        </article>
+
+        <article class="p-6 rounded-3xl bg-black/75 border-2 border-cyan-400 shadow-[0_0_25px_rgba(0,247,255,0.3)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-red-600 flex items-center justify-center font-black text-xl border-2 border-white">А</div>
+              <div>
+                <div class="font-black text-lg text-white">Артем</div>
+                <div class="text-yellow-400 text-sm tracking-widest">★★★★★ 5.0</div>
+              </div>
+            </div>
+            <p class="text-sm sm:text-base text-slate-200 font-sans font-bold">
+              «Лучший драйв в моей жизни. Включил турбо СДВГ режим и сразу получил +99999 ауры и бесконечный респект!»
+            </p>
+          </div>
+          <div class="mt-4 text-xs text-fuchsia-400 font-bold">✔ VIP-легенда 2026</div>
+        </article>
+      </div>
+    </section>
+
+    <footer class="mt-16 text-center pb-8">
+      <button type="button" onclick="triggerOverdrive()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-lime-400 via-cyan-400 to-fuchsia-500 text-black font-black text-base sm:text-xl border-4 border-white shadow-[0_0_30px_rgba(0,247,255,0.8)] hover:scale-110 active:scale-95 transition-transform cursor-pointer">
+        🔥 ЕЩЁ РАЗ СКОЧАТ БИСПЛАТНА (file.mp4) 🔥
+      </button>
+      <p class="mt-6 text-xs sm:text-sm text-fuchsia-200/80 font-sans font-bold">
+        © 2026 YARUSSKIY DRIVE CORP. Все права разогнаны до скорости света.
+      </p>
+    </footer>
+  </main>
+
+  <div class="fixed bottom-0 left-0 right-0 z-40 marquee-wrap py-2 text-xs sm:text-sm md:text-base tracking-wider">
+    <div class="marquee-track-reverse">
+      🔥 YARUSSKIY DRIVE 2026 🔥 999999 ТБ БЕСПЛАТНО ⚡ БЕЗ СМС И РЕГИСТРАЦИИ ⚡ СКОРОСТЬ СВЕТА ⚡ ОДОБРЕНО ГЕНИЯМИ ⚡ ЖМИ СКОЧАТ БИСПЛАТНА ⚡ 🔥 YARUSSKIY DRIVE 2026 🔥 999999 ТБ БЕСПЛАТНО ⚡ БЕЗ СМС И РЕГИСТРАЦИИ ⚡ СКОРОСТЬ СВЕТА ⚡ ОДОБРЕНО ГЕНИЯМИ ⚡ ЖМИ СКОЧАТ БИСПЛАТНА ⚡
+    </div>
+  </div>
+
+  <div id="successModal" class="fixed inset-0 z-70 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-md">
+    <div class="relative w-full max-w-lg p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-purple-900 via-fuchsia-900 to-indigo-950 border-4 border-yellow-300 shadow-[0_0_80px_rgba(255,0,234,0.95)] text-center animate-bounce">
+      <button id="closeModalBtn" type="button" class="absolute top-3 right-3 w-10 h-10 rounded-full bg-black/60 border-2 border-white text-white font-black text-xl hover:bg-red-600 transition-colors cursor-pointer">✕</button>
+      <div class="text-5xl sm:text-6xl mb-3">🎆🚀🏆</div>
+      <h3 class="text-2xl sm:text-3xl font-black text-yellow-300 drop-shadow-[0_0_12px_#ffe600] mb-3">
+        ЗАГРУЗКА file.mp4 ПОШЛА! ТЫ ЛЕГЕНДА!
+      </h3>
+      <p class="text-sm sm:text-base text-cyan-100 font-sans font-bold mb-6">
+        Твой файл <span class="text-lime-300">file.mp4</span> уже летит к тебе на квантовой тяге! Начислено <span class="text-yellow-300">+99999 АУРЫ</span> и <span class="text-fuchsia-300">+5000% К СКОРОСТИ</span>!
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button id="moreFireworksBtn" type="button" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-yellow-400 via-pink-500 to-cyan-400 text-black font-black text-base border-2 border-white shadow-[0_0_25px_rgba(255,230,0,0.9)] hover:scale-105 active:scale-95 transition-transform cursor-pointer">
+          🎆 ЕЩЁ ФЕЙЕРВЕРКОВ!!
+        </button>
+        <button id="okModalBtn" type="button" class="px-6 py-3.5 rounded-2xl bg-black/70 text-white font-black text-base border-2 border-cyan-400 hover:bg-cyan-500 hover:text-black transition-colors cursor-pointer">
+          КАЙФ, ЗАКРЫТЬ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      soundEnabled: true,
+      turboMode: false,
+      overdriveTimer: 0,
+      laserTime: 0,
+      online: 148920,
+      tb: 9842105,
+      adhd: 999,
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+
+    const bgCanvas = document.getElementById('bgCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    const fxCanvas = document.getElementById('fxCanvas');
+    const fxCtx = fxCanvas.getContext('2d');
+    const rainbowFrame = document.getElementById('rainbowFrame');
+    const mainWrap = document.getElementById('mainWrap');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const soundBtn = document.getElementById('soundBtn');
+    const turboBtn = document.getElementById('turboBtn');
+    const successModal = document.getElementById('successModal');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    const okModalBtn = document.getElementById('okModalBtn');
+    const moreFireworksBtn = document.getElementById('moreFireworksBtn');
+    const toastContainer = document.getElementById('toastContainer');
+    const onlineCounter = document.getElementById('onlineCounter');
+    const tbCounter = document.getElementById('tbCounter');
+    const adhdCounter = document.getElementById('adhdCounter');
+
+    const neonColors = ['#ff00ea', '#00f7ff', '#39ff14', '#ffe600', '#ff3300', '#9d00ff', '#ffffff'];
+
+    let audioCtx = null;
+    function getAudioCtx() {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function playFanfareAndDrop() {
+      if (!state.soundEnabled) return;
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const notes = [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5, 1318.51];
+        const times = [0, 0.09, 0.18, 0.27, 0.42, 0.52, 0.64];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = idx % 2 === 0 ? 'sawtooth' : 'square';
+          osc.frequency.setValueAtTime(freq, now + times[idx]);
+          gain.gain.setValueAtTime(0.14, now + times[idx]);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + times[idx] + 0.28);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + times[idx]);
+          osc.stop(now + times[idx] + 0.3);
+        });
+
+        const bassOsc = ctx.createOscillator();
+        const bassGain = ctx.createGain();
+        bassOsc.type = 'triangle';
+        bassOsc.frequency.setValueAtTime(160, now);
+        bassOsc.frequency.exponentialRampToValueAtTime(36, now + 0.75);
+        bassGain.gain.setValueAtTime(0.42, now);
+        bassGain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+        bassOsc.connect(bassGain);
+        bassGain.connect(ctx.destination);
+        bassOsc.start(now);
+        bassOsc.stop(now + 0.9);
+      } catch (e) {}
+    }
+
+    function playFireworkPop() {
+      if (!state.soundEnabled) return;
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const bufferSize = ctx.sampleRate * 0.18;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.28));
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(400 + Math.random() * 900, now);
+
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start(now);
+      } catch (e) {}
+    }
+
+    function playHoverBlip() {
+      if (!state.soundEnabled) return;
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      try {
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.08);
+        gain.gain.setValueAtTime(0.07, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } catch (e) {}
+    }
+
+    function resizeCanvases() {
+      state.width = window.innerWidth;
+      state.height = window.innerHeight;
+      bgCanvas.width = state.width;
+      bgCanvas.height = state.height;
+      fxCanvas.width = state.width;
+      fxCanvas.height = state.height;
+    }
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
+
+    const stars = [];
+    const shapes = [];
+    const dvdBadges = [];
+
+    function initBackgroundEntities() {
+      stars.length = 0;
+      for (let i = 0; i < 110; i++) {
+        stars.push({
+          x: Math.random() * state.width,
+          y: Math.random() * state.height,
+          z: Math.random() * 3 + 0.5,
+          color: neonColors[i % neonColors.length]
+        });
+      }
+
+      shapes.length = 0;
+      for (let i = 0; i < 18; i++) {
+        shapes.push({
+          x: Math.random() * state.width,
+          y: Math.random() * state.height,
+          vx: (Math.random() - 0.5) * 3.2,
+          vy: (Math.random() - 0.5) * 3.2,
+          size: 16 + Math.random() * 28,
+          rot: Math.random() * Math.PI * 2,
+          vrot: (Math.random() - 0.5) * 0.08,
+          sides: [3, 4, 5, 6][Math.floor(Math.random() * 4)],
+          color: neonColors[i % neonColors.length]
+        });
+      }
+
+      dvdBadges.length = 0;
+      const badgeCount = state.width < 640 ? 2 : 3;
+      for (let i = 0; i < badgeCount; i++) {
+        dvdBadges.push({
+          x: Math.random() * Math.max(100, state.width - 180),
+          y: 60 + Math.random() * Math.max(100, state.height - 160),
+          vx: (i % 2 === 0 ? 1 : -1) * (2.6 + i * 0.7),
+          vy: (i % 2 === 0 ? -1 : 1) * (2.2 + i * 0.5),
+          w: 165,
+          h: 36,
+          color: neonColors[(i * 2) % neonColors.length]
+        });
+      }
+    }
+    initBackgroundEntities();
+
+    const sparks = [];
+    const rockets = [];
+    const confetti = [];
+
+    function spawnCursorSpark(x, y, count = 2) {
+      for (let i = 0; i < count; i++) {
+        sparks.push({
+          x,
+          y,
+          vx: (Math.random() - 0.5) * 5,
+          vy: (Math.random() - 0.5) * 5 - 1,
+          size: 2 + Math.random() * 4,
+          life: 1,
+          decay: 0.03 + Math.random() * 0.03,
+          color: neonColors[Math.floor(Math.random() * neonColors.length)],
+          isStar: Math.random() > 0.55
+        });
+      }
+    }
+
+    function launchRocket(targetX, targetY) {
+      const startX = targetX !== undefined ? targetX : state.width * (0.12 + Math.random() * 0.76);
+      const peakY = targetY !== undefined ? targetY : state.height * (0.12 + Math.random() * 0.45);
+      rockets.push({
+        x: startX,
+        y: state.height + 10,
+        vx: (Math.random() - 0.5) * 3.5,
+        vy: -(11 + Math.random() * 6),
+        targetY: peakY,
+        color: neonColors[Math.floor(Math.random() * neonColors.length)],
+        trail: []
+      });
+    }
+
+    function explodeFirework(x, y, baseColor) {
+      playFireworkPop();
+      const particleCount = state.width < 640 ? 42 : 68;
+      for (let i = 0; i < particleCount; i++) {
+        const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.25;
+        const speed = 2.2 + Math.random() * 8.5;
+        sparks.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          size: 2.5 + Math.random() * 4.5,
+          life: 1,
+          decay: 0.012 + Math.random() * 0.016,
+          gravity: 0.11,
+          color: Math.random() > 0.3 ? baseColor : neonColors[Math.floor(Math.random() * neonColors.length)],
+          isStar: Math.random() > 0.6
+        });
+      }
+    }
+
+    function launchConfettiCannons() {
+      const count = state.width < 640 ? 70 : 130;
+      for (let i = 0; i < count; i++) {
+        const fromLeft = i % 2 === 0;
+        const angle = fromLeft
+          ? -(Math.PI / 5 + Math.random() * (Math.PI / 3.2))
+          : -(Math.PI - (Math.PI / 5 + Math.random() * (Math.PI / 3.2)));
+        const speed = 10 + Math.random() * 14;
+        confetti.push({
+          x: fromLeft ? 0 : state.width,
+          y: state.height - 20,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          w: 7 + Math.random() * 9,
+          h: 4 + Math.random() * 6,
+          rot: Math.random() * Math.PI * 2,
+          vrot: (Math.random() - 0.5) * 0.35,
+          color: neonColors[Math.floor(Math.random() * neonColors.length)],
+          life: 1
+        });
+      }
+    }
+
+    const hypePhrases = [
+      'СКАЧАНО!!1!',
+      'ПОГНАЛИИИ!',
+      'УСПЕХ 1000%',
+      'МЕГА ХАЙП!',
+      '+99999 АУРЫ',
+      'FPS +99999!',
+      'ЛЕГЕНДА!!',
+      'ТУРБО ЗАГРУЗКА!'
+    ];
+
+    function spawnHypeWord(x, y) {
+      const el = document.createElement('div');
+      el.className = 'floating-hype-word text-xl sm:text-3xl md:text-4xl font-black';
+      el.textContent = hypePhrases[Math.floor(Math.random() * hypePhrases.length)];
+      el.style.left = (x !== undefined ? x : 15 + Math.random() * 70) + (x !== undefined ? 'px' : 'vw');
+      el.style.top = (y !== undefined ? y : 25 + Math.random() * 50) + (y !== undefined ? 'px' : 'vh');
+      el.style.color = neonColors[Math.floor(Math.random() * neonColors.length)];
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1850);
+    }
+
+    function triggerFireworksShow() {
+      playFanfareAndDrop();
+      launchConfettiCannons();
+      state.laserTime = 260;
+
+      for (let wave = 0; wave < 4; wave++) {
+        setTimeout(() => {
+          const rocketsPerWave = state.width < 640 ? 5 : 8;
+          for (let r = 0; r < rocketsPerWave; r++) {
+            setTimeout(() => launchRocket(), r * 110);
+          }
+          spawnHypeWord();
+          spawnHypeWord();
+        }, wave * 650);
+      }
+
+      rainbowFrame.classList.add('active');
+      mainWrap.classList.add('screen-shake');
+      setTimeout(() => {
+        mainWrap.classList.remove('screen-shake');
+      }, 1500);
+      setTimeout(() => {
+        rainbowFrame.classList.remove('active');
+      }, 3600);
+    }
+
+    function triggerDownloadFile() {
+      try {
+        const a = document.createElement('a');
+        a.href = 'file.mp4';
+        a.download = 'file.mp4';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 100);
+      } catch (e) {}
+    }
+
+    function triggerOverdrive() {
+      triggerDownloadFile();
+      triggerFireworksShow();
+      state.tb += Math.floor(150 + Math.random() * 500);
+      state.online += Math.floor(50 + Math.random() * 200);
+      setTimeout(() => {
+        successModal.classList.remove('hidden');
+        successModal.classList.add('flex');
+      }, 450);
+    }
+
+    window.triggerOverdrive = triggerOverdrive;
+
+    window.spawnRandomBurst = function(e) {
+      explodeFirework(e.clientX, e.clientY, neonColors[Math.floor(Math.random() * neonColors.length)]);
+      spawnHypeWord(e.clientX, e.clientY);
+    };
+
+    downloadBtn.addEventListener('click', triggerOverdrive);
+
+    let hoverSparkInterval = null;
+    downloadBtn.addEventListener('mouseenter', () => {
+      playHoverBlip();
+      hoverSparkInterval = setInterval(() => {
+        const rect = downloadBtn.getBoundingClientRect();
+        const edge = Math.floor(Math.random() * 4);
+        let sx = rect.left + Math.random() * rect.width;
+        let sy = rect.top + Math.random() * rect.height;
+        if (edge === 0) sy = rect.top;
+        if (edge === 1) sy = rect.bottom;
+        if (edge === 2) sx = rect.left;
+        if (edge === 3) sx = rect.right;
+        spawnCursorSpark(sx, sy, 4);
+      }, 45);
+    });
+
+    downloadBtn.addEventListener('mouseleave', () => {
+      if (hoverSparkInterval) {
+        clearInterval(hoverSparkInterval);
+        hoverSparkInterval = null;
+      }
+    });
+
+    moreFireworksBtn.addEventListener('click', () => {
+      triggerFireworksShow();
+    });
+
+    function closeModal() {
+      successModal.classList.add('hidden');
+      successModal.classList.remove('flex');
+    }
+    closeModalBtn.addEventListener('click', closeModal);
+    okModalBtn.addEventListener('click', closeModal);
+    successModal.addEventListener('click', (e) => {
+      if (e.target === successModal) closeModal();
+    });
+
+    soundBtn.addEventListener('click', () => {
+      state.soundEnabled = !state.soundEnabled;
+      soundBtn.textContent = state.soundEnabled ? '🔊 ЗВУК: ВКЛ' : '🔇 ЗВУК: ВЫКЛ';
+      if (state.soundEnabled) playHoverBlip();
+    });
+
+    turboBtn.addEventListener('click', () => {
+      state.turboMode = !state.turboMode;
+      document.documentElement.style.setProperty('--speed-mult', state.turboMode ? '2.8' : '1');
+      document.body.classList.toggle('turbo-active', state.turboMode);
+      turboBtn.textContent = state.turboMode ? '🔥 ТУРБО СДВГ: МАКС!!' : '⚡ ТУРБО СДВГ: ВЫКЛ';
+      if (state.turboMode) {
+        adhdCounter.textContent = '99999%';
+        playFanfareAndDrop();
+        launchConfettiCannons();
+        spawnHypeWord();
+        spawnHypeWord();
+      } else {
+        adhdCounter.textContent = '999%';
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      spawnCursorSpark(e.clientX, e.clientY, state.turboMode ? 4 : 2);
+    });
+
+    window.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches[0]) {
+        spawnCursorSpark(e.touches[0].clientX, e.touches[0].clientY, 2);
+      }
+    }, { passive: true });
+
+    document.querySelectorAll('.tilt-card').forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateY = ((x / rect.width) - 0.5) * 22;
+        const rotateX = ((0.5 - (y / rect.height))) * 22;
+        card.style.transform = `perspective(700px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(700px) rotateX(0deg) rotateY(0deg) scale(1)';
+      });
+    });
+
+    const toastMessages = [
+      '🔥 Димон228 только что скачал file.mp4!',
+      '⚡ Кирилл ускорил интернет на 5000%!',
+      '💎 Валера получил 100 ТБ бесплатно!',
+      '🚀 Санёк поднял FPS до 9999!',
+      '🏆 Настя скачала file.mp4 за 0.0001 сек!',
+      '👑 Вован активировал ТУРБО СДВГ РЕЖИМ!',
+      '🎉 Илья получил +99999 АУРЫ!'
+    ];
+
+    function showFakeToast() {
+      const msg = toastMessages[Math.floor(Math.random() * toastMessages.length)];
+      const toast = document.createElement('div');
+      toast.className = 'toast-enter px-4 py-2.5 rounded-2xl bg-black/85 border-2 border-cyan-400 text-white text-xs sm:text-sm font-sans font-extrabold shadow-[0_0_20px_rgba(0,247,255,0.6)]';
+      toast.textContent = msg;
+      toastContainer.appendChild(toast);
+      if (toastContainer.children.length > 3) {
+        toastContainer.removeChild(toastContainer.firstChild);
+      }
+      setTimeout(() => {
+        toast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-100%)';
+        setTimeout(() => toast.remove(), 400);
+      }, 3100);
+    }
+
+    setInterval(showFakeToast, 3500);
+    setTimeout(showFakeToast, 900);
+
+    setInterval(() => {
+      const boost = state.turboMode ? 9 : 1;
+      state.online += Math.floor((Math.random() * 17 - 3) * boost);
+      state.tb += Math.floor((Math.random() * 48 + 12) * boost);
+      onlineCounter.textContent = state.online.toLocaleString('ru-RU');
+      tbCounter.textContent = state.tb.toLocaleString('ru-RU');
+      if (state.turboMode) {
+        adhdCounter.textContent = (99999 + Math.floor(Math.random() * 9000)).toLocaleString('ru-RU') + '%';
+      } else {
+        adhdCounter.textContent = (999 + Math.floor(Math.random() * 45)) + '%';
+      }
+    }, 180);
+
+    function drawPolygon(ctx, x, y, radius, sides, rot, color) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.beginPath();
+      for (let i = 0; i < sides; i++) {
+        const angle = (i * 2 * Math.PI) / sides;
+        const px = Math.cos(angle) * radius;
+        const py = Math.sin(angle) * radius;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 2.5;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 12;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawStar(ctx, x, y, r, color) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.beginPath();
+      for (let i = 0; i < 5; i++) {
+        const a = (i * 4 * Math.PI) / 5 - Math.PI / 2;
+        const px = Math.cos(a) * r;
+        const py = Math.sin(a) * r;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    let laserAngle = 0;
+
+    function animate() {
+      const speedMult = state.turboMode ? 2.6 : 1;
+
+      bgCtx.clearRect(0, 0, state.width, state.height);
+
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        s.y += s.z * 1.4 * speedMult;
+        if (s.y > state.height) {
+          s.y = -4;
+          s.x = Math.random() * state.width;
+        }
+        bgCtx.fillStyle = s.color;
+        bgCtx.beginPath();
+        bgCtx.arc(s.x, s.y, s.z * 0.9, 0, Math.PI * 2);
+        bgCtx.fill();
+      }
+
+      for (let i = 0; i < shapes.length; i++) {
+        const sh = shapes[i];
+        sh.x += sh.vx * speedMult;
+        sh.y += sh.vy * speedMult;
+        sh.rot += sh.vrot * speedMult;
+        if (sh.x < -50) sh.x = state.width + 50;
+        if (sh.x > state.width + 50) sh.x = -50;
+        if (sh.y < -50) sh.y = state.height + 50;
+        if (sh.y > state.height + 50) sh.y = -50;
+        drawPolygon(bgCtx, sh.x, sh.y, sh.size, sh.sides, sh.rot, sh.color);
+      }
+
+      for (let i = 0; i < dvdBadges.length; i++) {
+        const b = dvdBadges[i];
+        b.x += b.vx * speedMult;
+        b.y += b.vy * speedMult;
+        let hit = false;
+        if (b.x <= 0 || b.x + b.w >= state.width) {
+          b.vx *= -1;
+          b.x = Math.max(0, Math.min(state.width - b.w, b.x));
+          hit = true;
+        }
+        if (b.y <= 36 || b.y + b.h >= state.height - 36) {
+          b.vy *= -1;
+          b.y = Math.max(36, Math.min(state.height - 36 - b.h, b.y));
+          hit = true;
+        }
+        if (hit) {
+          b.color = neonColors[Math.floor(Math.random() * neonColors.length)];
+        }
+        bgCtx.save();
+        bgCtx.fillStyle = 'rgba(0, 0, 0, 0.72)';
+        bgCtx.strokeStyle = b.color;
+        bgCtx.lineWidth = 2.5;
+        bgCtx.shadowColor = b.color;
+        bgCtx.shadowBlur = 16;
+        bgCtx.beginPath();
+        bgCtx.roundRect(b.x, b.y, b.w, b.h, 12);
+        bgCtx.fill();
+        bgCtx.stroke();
+        bgCtx.fillStyle = b.color;
+        bgCtx.font = '900 12px "Rubik Mono One", sans-serif';
+        bgCtx.textAlign = 'center';
+        bgCtx.textBaseline = 'middle';
+        bgCtx.fillText('YARUSSKIY DRIVE', b.x + b.w / 2, b.y + b.h / 2 + 1);
+        bgCtx.restore();
+      }
+
+      fxCtx.clearRect(0, 0, state.width, state.height);
+
+      if (state.laserTime > 0) {
+        state.laserTime--;
+        laserAngle += 0.045 * speedMult;
+        const cx = state.width / 2;
+        const cy = state.height / 2;
+        const maxR = Math.hypot(state.width, state.height);
+        fxCtx.save();
+        fxCtx.globalAlpha = Math.min(0.45, state.laserTime / 120);
+        for (let i = 0; i < 8; i++) {
+          const a = laserAngle + (i * Math.PI) / 4;
+          fxCtx.strokeStyle = neonColors[i % neonColors.length];
+          fxCtx.lineWidth = 6;
+          fxCtx.shadowColor = neonColors[i % neonColors.length];
+          fxCtx.shadowBlur = 20;
+          fxCtx.beginPath();
+          fxCtx.moveTo(cx, cy);
+          fxCtx.lineTo(cx + Math.cos(a) * maxR, cy + Math.sin(a) * maxR);
+          fxCtx.stroke();
+        }
+        fxCtx.restore();
+      }
+
+      for (let i = rockets.length - 1; i >= 0; i--) {
+        const r = rockets[i];
+        r.trail.push({ x: r.x, y: r.y });
+        if (r.trail.length > 10) r.trail.shift();
+        r.x += r.vx;
+        r.y += r.vy;
+        r.vy += 0.16;
+
+        fxCtx.save();
+        for (let t = 0; t < r.trail.length; t++) {
+          fxCtx.globalAlpha = t / r.trail.length;
+          fxCtx.fillStyle = r.color;
+          fxCtx.beginPath();
+          fxCtx.arc(r.trail[t].x, r.trail[t].y, 3, 0, Math.PI * 2);
+          fxCtx.fill();
+        }
+        fxCtx.globalAlpha = 1;
+        fxCtx.fillStyle = '#ffffff';
+        fxCtx.beginPath();
+        fxCtx.arc(r.x, r.y, 4.5, 0, Math.PI * 2);
+        fxCtx.fill();
+        fxCtx.restore();
+
+        if (r.vy >= 0 || r.y <= r.targetY) {
+          explodeFirework(r.x, r.y, r.color);
+          rockets.splice(i, 1);
+        }
+      }
+
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const p = sparks[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.gravity) p.vy += p.gravity;
+        p.vx *= 0.985;
+        p.life -= p.decay;
+        if (p.life <= 0) {
+          sparks.splice(i, 1);
+          continue;
+        }
+        fxCtx.save();
+        fxCtx.globalAlpha = p.life;
+        fxCtx.shadowColor = p.color;
+        fxCtx.shadowBlur = 10;
+        if (p.isStar) {
+          drawStar(fxCtx, p.x, p.y, p.size * 1.4, p.color);
+        } else {
+          fxCtx.fillStyle = p.color;
+          fxCtx.beginPath();
+          fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          fxCtx.fill();
+        }
+        fxCtx.restore();
+      }
+
+      for (let i = confetti.length - 1; i >= 0; i--) {
+        const c = confetti[i];
+        c.x += c.vx;
+        c.y += c.vy;
+        c.vy += 0.28;
+        c.vx *= 0.99;
+        c.rot += c.vrot;
+        c.life -= 0.007;
+        if (c.life <= 0 || c.y > state.height + 30) {
+          confetti.splice(i, 1);
+          continue;
+        }
+        fxCtx.save();
+        fxCtx.globalAlpha = Math.min(1, c.life * 2);
+        fxCtx.translate(c.x, c.y);
+        fxCtx.rotate(c.rot);
+        fxCtx.fillStyle = c.color;
+        fxCtx.fillRect(-c.w / 2, -c.h / 2, c.w, c.h);
+        fxCtx.restore();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    window.onload = function() {
+      animate();
+    };
+  </script>
+</body>
+</html>
